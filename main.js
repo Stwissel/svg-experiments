@@ -47,6 +47,19 @@ function drawRectangles(data) {
     .attr('id', (d) => `t-${d.label}`)
     .text((d) => d.label);
 
+  svg
+    .append('rect')
+    .attr('width', boxSize)
+    .attr('height', boxSize)
+    .attr('x', 0)
+    .attr('y', 0)
+    .attr('fill', 'green')
+    .attr('stroke', 'black')
+    .attr('stroke-width', '3')
+    .attr('fill-opacity', '0.2')
+    .attr('style', 'stroke: green')
+    .attr('id', 'robot');
+
   /**
    * Show tooltip on mouseover.
    * @param {Object} event - Data of the hovered rectangle.
