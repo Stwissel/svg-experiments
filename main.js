@@ -57,7 +57,7 @@ function drawRectangles(data) {
     .attr('fill', 'orange')
     .attr('stroke', 'black')
     .attr('stroke-width', '3')
-    .attr('fill-opacity', '0.2')
+    .attr('fill-opacity', '0.5')
     .attr('style', robotPosition.style)
     .attr('id', 'robot');
 
@@ -106,24 +106,16 @@ const moveRobot = (row, column) => {
   // X => column, Y => row
   if (robotPosition.y != row && robotPosition.x > 0) {
     robotPosition.x -= 1;
-    robotPosition.style = 'stroke: pink; stroke-width: 2px';
-    return;
-  }
-
-  if (robotPosition.y != row && robotPosition.x == 0) {
+  } else if (robotPosition.y != row && robotPosition.x == 0) {
     if (robotPosition.y > row) {
       robotPosition.y -= 1;
     } else {
       robotPosition.y += 1;
     }
-    robotPosition.style = 'stroke: pink; stroke-width: 2px';
-    return;
-  }
-
-  if (robotPosition.x < column) {
+  } else if (robotPosition.x < column) {
     robotPosition.x += 1;
-    robotPosition.style = 'stroke: black; stroke-width: 5px';
   }
+  robotPosition.style = 'stroke: darkgreen; stroke-width: 2px';
 };
 
 const animatesim = () => {
@@ -138,6 +130,7 @@ const move = (step) => {
   box.column += step.d.y;
   robotPosition.x = box.column;
   robotPosition.y = box.row;
+  robotPosition.style = 'stroke: black; stroke-width: 5px';
   if (box.row == 0 && box.column == 0) {
     box.color = '#CCFFCC';
   }
