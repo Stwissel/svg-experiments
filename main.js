@@ -6,6 +6,7 @@ import * as d3 from 'd3';
  */
 let boxData = {};
 let moveSimData = [];
+let robotPosition = { x: 0, y: 0, style: 'stroke: pink' };
 const labels = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
 
 /**
@@ -51,13 +52,13 @@ function drawRectangles(data) {
     .append('rect')
     .attr('width', boxSize)
     .attr('height', boxSize)
-    .attr('x', 0)
-    .attr('y', 0)
-    .attr('fill', 'green')
+    .attr('x', robotPosition.x * spacing)
+    .attr('y', robotPosition.y * spacing)
+    .attr('fill', 'orange')
     .attr('stroke', 'black')
     .attr('stroke-width', '3')
     .attr('fill-opacity', '0.2')
-    .attr('style', 'stroke: green')
+    .attr('style', robotPosition.style)
     .attr('id', 'robot');
 
   /**
@@ -89,13 +90,45 @@ const movesim = () => {
     alert('End of the line');
     return false;
   }
+  let box = boxData[step.id];
+  if (box.row != robotPosition.y || box.column != robotPosition.x) {
+    moveRobot(box.row, box.column);
+    resetSVG();
+    drawRectangles(boxData);
+    moveSimData.unshift(step);
+    return true;
+  }
   move(step);
   return true;
 };
 
+const moveRobot = (row, column) => {
+  // X => column, Y => row
+  if (robotPosition.y != row && robotPosition.x > 0) {
+    robotPosition.x -= 1;
+    robotPosition.style = 'stroke: pink; stroke-width: 2px';
+    return;
+  }
+
+  if (robotPosition.y != row && robotPosition.x == 0) {
+    if (robotPosition.y > row) {
+      robotPosition.y -= 1;
+    } else {
+      robotPosition.y += 1;
+    }
+    robotPosition.style = 'stroke: pink; stroke-width: 2px';
+    return;
+  }
+
+  if (robotPosition.x < column) {
+    robotPosition.x += 1;
+    robotPosition.style = 'stroke: black; stroke-width: 5px';
+  }
+};
+
 const animatesim = () => {
   if (movesim()) {
-    setTimeout(animatesim, 100);
+    setTimeout(animatesim, 500);
   }
 };
 
@@ -103,6 +136,8 @@ const move = (step) => {
   let box = boxData[step.id];
   box.row += step.d.x;
   box.column += step.d.y;
+  robotPosition.x = box.column;
+  robotPosition.y = box.row;
   if (box.row == 0 && box.column == 0) {
     box.color = '#CCFFCC';
   }
@@ -141,6 +176,7 @@ const fetchData = () =>
       label: 'Dock',
       id: 'loaddock'
     };
+
     boxData[startingPoint.label] = startingPoint;
 
     // Transport Rail
@@ -246,11 +282,6 @@ const makeBox = (i, j) => {
  * Setup event hooks and initial draw
  */
 const bootstrap = async () => {
-  document.getElementById('btnMove').addEventListener('click', (event) => {
-    event.preventDefault();
-    movesim();
-  });
-
   document.getElementById('btnAnimate').addEventListener('click', (event) => {
     event.preventDefault();
     animatesim();
